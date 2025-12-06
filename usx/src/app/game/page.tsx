@@ -81,6 +81,13 @@ export default function GamePage() {
         else keys["ArrowUp"] = true;
       }
     });
+    // タップ（クリック）で地雷を設置
+    canvas.addEventListener("click", () => {
+      if (mines.length < MAX_BOMBS) {
+        mines.push({ x: player.x, y: player.y });
+        bombCount--;
+      }
+    });
     // スマホ用にタッチ対応も追加
     canvas.addEventListener(
       "touchstart",
