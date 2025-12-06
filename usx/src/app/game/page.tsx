@@ -66,6 +66,7 @@ export default function GamePage() {
       if (mines.length >= MAX_BOMBS) return;
 
       mines.push({ x: player.x, y: player.y });
+      bombCount--;
       lastPlaceTime = now;
     }
 
