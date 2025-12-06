@@ -60,46 +60,44 @@ export default function GamePage() {
     };
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
-    // スワイプ入力
-    let touchStartX = 0;
-    let touchStartY = 0;
 
-    canvas.addEventListener("touchstart", (e) => {
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-    });
+    // タップ／クリックでプレイヤーを移動させる
+    canvas.addEventListener("click", (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
 
-    canvas.addEventListener("touchend", (e) => {
-      const dx = e.changedTouches[0].clientX - touchStartX;
-      const dy = e.changedTouches[0].clientY - touchStartY;
+      player.x = x;
+      player.y = y;
 
-      if (Math.abs(dx) > Math.abs(dy)) {
-        if (dx > 0) keys["ArrowRight"] = true;
-        else keys["ArrowLeft"] = true;
-      } else {
-        if (dy > 0) keys["ArrowDown"] = true;
-        else keys["ArrowUp"] = true;
-      }
-    });
-    // タップ（クリック）で地雷を設置
-    canvas.addEventListener("click", () => {
+      // 任意でタップで地雷設置も可能
       if (mines.length < MAX_BOMBS) {
-        mines.push({ x: player.x, y: player.y });
+        mines.push({ x, y });
         bombCount--;
       }
     });
-    // スマホ用にタッチ対応も追加
+
+    // スマホタッチ対応
     canvas.addEventListener(
       "touchstart",
       (e) => {
         e.preventDefault(); // スクロール防止
+        const rect = canvas.getBoundingClientRect();
+        const x = e.touches[0].clientX - rect.left;
+        const y = e.touches[0].clientY - rect.top;
+
+        player.x = x;
+        player.y = y;
+
+        // 地雷設置
         if (mines.length < MAX_BOMBS) {
-          mines.push({ x: player.x, y: player.y });
+          mines.push({ x, y });
           bombCount--;
         }
       },
       { passive: false }
     );
+
     // sounds
     const bgmSound = new Audio("/sounds/bgm.wav");
     bgmSound.loop = true; // ループ再生
