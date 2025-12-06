@@ -60,7 +60,39 @@ export default function GamePage() {
     };
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
+    // スワイプ入力
+    let touchStartX = 0;
+    let touchStartY = 0;
 
+    canvas.addEventListener("touchstart", (e) => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    });
+
+    canvas.addEventListener("touchend", (e) => {
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      const dy = e.changedTouches[0].clientY - touchStartY;
+
+      if (Math.abs(dx) > Math.abs(dy)) {
+        if (dx > 0) keys["ArrowRight"] = true;
+        else keys["ArrowLeft"] = true;
+      } else {
+        if (dy > 0) keys["ArrowDown"] = true;
+        else keys["ArrowUp"] = true;
+      }
+    });
+    // スマホ用にタッチ対応も追加
+    canvas.addEventListener(
+      "touchstart",
+      (e) => {
+        e.preventDefault(); // スクロール防止
+        if (mines.length < MAX_BOMBS) {
+          mines.push({ x: player.x, y: player.y });
+          bombCount--;
+        }
+      },
+      { passive: false }
+    );
     // sounds
     const bgmSound = new Audio("/sounds/bgm.wav");
     bgmSound.loop = true; // ループ再生
