@@ -61,42 +61,42 @@ export default function GamePage() {
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
 
-    // タップ／クリックでプレイヤーを移動させる
-    canvas.addEventListener("click", (e) => {
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+    // // タップ／クリックでプレイヤーを移動させる
+    // canvas.addEventListener("click", (e) => {
+    //   const rect = canvas.getBoundingClientRect();
+    //   const x = e.clientX - rect.left;
+    //   const y = e.clientY - rect.top;
 
-      player.x = x;
-      player.y = y;
+    //   player.x = x;
+    //   player.y = y;
 
-      // 任意でタップで地雷設置も可能
-      if (mines.length < MAX_BOMBS) {
-        mines.push({ x, y });
-        bombCount--;
-      }
-    });
+    //   // 任意でタップで地雷設置も可能
+    //   if (mines.length < MAX_BOMBS) {
+    //     mines.push({ x, y });
+    //     bombCount--;
+    //   }
+    // });
 
-    // スマホタッチ対応
-    canvas.addEventListener(
-      "touchstart",
-      (e) => {
-        e.preventDefault(); // スクロール防止
-        const rect = canvas.getBoundingClientRect();
-        const x = e.touches[0].clientX - rect.left;
-        const y = e.touches[0].clientY - rect.top;
+    // // スマホタッチ対応
+    // canvas.addEventListener(
+    //   "touchstart",
+    //   (e) => {
+    //     e.preventDefault(); // スクロール防止
+    //     const rect = canvas.getBoundingClientRect();
+    //     const x = e.touches[0].clientX - rect.left;
+    //     const y = e.touches[0].clientY - rect.top;
 
-        player.x = x;
-        player.y = y;
+    //     player.x = x;
+    //     player.y = y;
 
-        // 地雷設置
-        if (mines.length < MAX_BOMBS) {
-          mines.push({ x, y });
-          bombCount--;
-        }
-      },
-      { passive: false }
-    );
+    //     // 地雷設置
+    //     if (mines.length < MAX_BOMBS) {
+    //       mines.push({ x, y });
+    //       bombCount--;
+    //     }
+    //   },
+    //   { passive: false }
+    // );
 
     // sounds
     const bgmSound = new Audio("/sounds/bgm.wav");
@@ -284,7 +284,28 @@ export default function GamePage() {
     //   console.log("ユーザー操作待ち");
     // });
     loop();
+    // キーボード / タップイベントはここで登録
+    const handleTap = (e: MouseEvent | TouchEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      const x =
+        "touches" in e
+          ? e.touches[0].clientX - rect.left
+          : e.clientX - rect.left;
+      const y =
+        "touches" in e ? e.touches[0].clientY - rect.top : e.clientY - rect.top;
 
+      player.x = x;
+      player.y = y;
+
+      // 地雷設置
+      if (mines.length < MAX_BOMBS) {
+        mines.push({ x, y });
+        bombCount--;
+      }
+    };
+
+    canvas.addEventListener("click", handleTap);
+    canvas.addEventListener("touchstart", handleTap, { passive: false });
     // クリーンアップ
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
